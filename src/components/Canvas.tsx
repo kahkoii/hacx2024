@@ -1,10 +1,11 @@
 import { createRef, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
 import paper from 'paper'
-import 'jetbrains-mono'
+import ship from '/images/Untitled_Artwork.png?url'
 
 const PaperJoystick = (
   paper,
+  labelText,
   joystickCenter, 
   sensitivity, 
   pollInterval, 
@@ -15,6 +16,19 @@ const PaperJoystick = (
 
   const joystickBase = new paper.Path.Circle(joystickCenter, 50);
   joystickBase.fillColor = new paper.Color(0.5, 0.5, 0.5, 0.1);
+
+  const label = new paper.PointText(new paper.Point(joystickCenter.x, joystickCenter.y - 64));
+  label.justification = 'center';
+  label.fillColor = 'black';
+  label.content = labelText;
+  label.fontFamily = 'JetBrains Mono'
+  label.fontWeight = 'bold'
+
+  const labelBg = new paper.Path.Rectangle(label.bounds, 2);
+  labelBg.matrix = new paper.Matrix().scale(1.2);
+  labelBg.position = label.position;
+  labelBg.fillColor = 'white';
+  label.bringToFront();
 
   joystick.bringToFront();
   let joystickActive = false;
@@ -73,7 +87,7 @@ const generatePathGroup = (paper) => {
 
   for (let i=0; i<paths.length; i++) {
     const path = new paper.Path(paths[i]);
-    path.strokeColor = new paper.Color(0, 0, 0, 0.2);
+    path.strokeColor = new paper.Color(0, 1, 0);
     path.dashOffset = 5;
 
     pathGroup.addChild(path);
@@ -106,7 +120,7 @@ const generateObstacleGroup = (paper) => {
   for (let i=0; i<obstacles.length; i++) {
     const obstacle = new paper.Path(obstacles[i]);
     obstacle.closed = true;
-    obstacle.fillColor = Math.random() > 0.5 ? new paper.Color(0, 0, 0, 0.01) : 'black';
+    obstacle.fillColor = new paper.Color(0, 0, 0, 0.01); 
 
     obstacleGroup.addChild(obstacle);
   }
@@ -125,19 +139,25 @@ export const Canvas = ({ props, children }) => {
     window.addEventListener('load', () => {
       paper.setup(canvasRef.current);
 
+      const sea = new paper.Path.Rectangle(paper.view.bounds);
+      sea.fillColor = 'lightblue';
+      sea.sendToBack();
+
+      const shipRaster = new paper.Raster(ship, new paper.Point(1754, 1240))
+      shipRaster.matrix = new paper.Matrix().scale(0.065).rotate(90, shipRaster.center);
+      shipRaster.rotation = 90;
+      shipRaster.position = paper.view.center;
+
       const obstacleGroup = generateObstacleGroup(paper);
       const pathGroup = generatePathGroup(paper);
       const worldGroup = new paper.Group([obstacleGroup, pathGroup]);
       worldGroup.position.x += 1000;
       worldGroup.position.y += 500;
+      worldGroup.rotate(-120, shipRaster.position);
 
-      const sea = new paper.Path.Rectangle(paper.view.bounds);
-      sea.fillColor = 'lightblue';
-      sea.sendToBack();
-
-      const lidar = new paper.Path.Circle(paper.view.center, 100);
+      const lidar = new paper.Path.Circle(shipRaster.position, 100);
       lidar.strokeColor = 'blue'
-
+      
       const dangerSense = () => {
         let danger = false;
 
@@ -159,19 +179,17 @@ export const Canvas = ({ props, children }) => {
         lidar.strokeColor = danger ? 'red' : 'blue'
       }
 
-      PaperJoystick(paper, new paper.Point(
-        100,
-        paper.view.bounds.height - 100
-      ), 0.01, 10, ({delta}) => {
+      const fineJoystickCenter = new paper.Point(100, paper.view.bounds.height - 100);
+      PaperJoystick(paper, 'FINE', fineJoystickCenter, 0.01, 10, ({delta}) => {
           worldGroup.position.x -= delta.x;
           worldGroup.position.y -= delta.y;
           dangerSense();
-        });
+      });
 
-      PaperJoystick(paper, new paper.Point(
-        225,
-        paper.view.bounds.height - 100
-      ), 0.01, 10, ({delta}) => {
+      const mainJoystickCenter = new paper.Point(225, paper.view.bounds.height - 100);
+      PaperJoystick(paper, 'MAIN', mainJoystickCenter, 0.05, 10, ({delta}) => {
+          worldGroup.position.y -= Math.abs(delta.y) > 0.1 ? delta.y : 0;
+          worldGroup.rotate(-delta.x / 10, shipRaster.position);
         dangerSense();
       })
     })
