@@ -3707,6 +3707,11 @@ iterator.prototype@^1.1.2:
     reflect.getprototypeof "^1.0.4"
     set-function-name "^2.0.1"
 
+jetbrains-mono@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/jetbrains-mono/-/jetbrains-mono-1.0.6.tgz#f716b35b9b750e4ad3ec82b6148e35d09373bf27"
+  integrity sha512-nVHwukZwQHKEQ3ZP1qlXFyFoUyBnonwrqLQf/ZlsoDPgTHm7T0EL0m1KJQ9U4ghu4emYuSR21uqmZalzNvvoUA==
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -4127,6 +4132,11 @@ p-locate@^5.0.0:
   integrity sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==
   dependencies:
     p-limit "^3.0.2"
+
+paper@^0.12.18:
+  version "0.12.18"
+  resolved "https://registry.yarnpkg.com/paper/-/paper-0.12.18.tgz#e024056217a35c36e2b5fda4629310fdc7025c91"
+  integrity sha512-ZSLIEejQTJZuYHhSSqAf4jXOnii0kPhCJGAnYAANtdS72aNwXJ9cP95tZHgq1tnNpvEwgQhggy+4OarviqTCGw==
 
 parent-module@^1.0.0:
   version "1.0.1"
