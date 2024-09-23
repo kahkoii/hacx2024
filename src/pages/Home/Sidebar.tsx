@@ -1,72 +1,91 @@
 import { Button, Flex, Text, Box } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-// @ts-expect-error no type definition available
-import CanvasJSReact from '@canvasjs/react-charts'
+import {
+	LineChart,
+	Line,
+	XAxis,
+	YAxis,
+	Legend,
+	ResponsiveContainer,
+} from 'recharts'
 
 const Sidebar = () => {
 	const [autoStatus, setAutoStatus] = useState(false)
 	const [sidebarOpen, setSidebarOpen] = useState(false)
-	const [latestWindSpeed, setLatestWindSpeed] = useState(9)
-	const [updater, setUpdater] = useState(true)
-	const [windData, setWindData] = useState([
-		{ x: 1, y: 6 },
-		{ x: 2, y: 5 },
-		{ x: 3, y: 7 },
-		{ x: 4, y: 6 },
-		{ x: 5, y: 10 },
-		{ x: 6, y: 11 },
-		{ x: 7, y: 7 },
-		{ x: 8, y: 5 },
-		{ x: 9, y: 4 },
-		{ x: 10, y: 5 },
-		{ x: 11, y: 5 },
-		{ x: 12, y: 7 },
-		{ x: 13, y: 9 },
-		{ x: 14, y: 12 },
-		{ x: 15, y: 12 },
-		{ x: 16, y: 11 },
-		{ x: 17, y: 13 },
-		{ x: 18, y: 15 },
-		{ x: 19, y: 17 },
-		{ x: 20, y: 15 },
-	])
-	// const CanvasJSChart = new CanvasJSReact.CanvasJSChart()
-	// const options = {
-	// 	animationEnabled: true,
-	// 	title: {
-	// 		text: 'Wind Speed Trends',
-	// 	},
-	// 	data: [
-	// 		{
-	// 			type: 'spline',
-	// 			dataPoints: windData,
-	// 		},
-	// 	],
-	// }
+	const [latestWindSpeed, setLatestWindSpeed] = useState(8)
+	const [riskLevel, setRiskLevel] = useState('Low')
+	const [updater, setUpdater] = useState(0)
+	const [updateChart, setUpdateChart] = useState(false)
 
-	const riskLevel = 'Low Risk'
+	const riskColor = {
+		Low: '#8DFF98',
+		Moderate: '#FFC46C',
+		High: '#FF6E8D',
+		'Very High': '#FF2323',
+	}
+
+	const [windData, setWindData] = useState([
+		{ x: 1, knots: 0 },
+		{ x: 2, knots: 0 },
+		{ x: 3, knots: 0 },
+		{ x: 4, knots: 0 },
+		{ x: 5, knots: 0 },
+		{ x: 6, knots: 0 },
+		{ x: 7, knots: 0 },
+		{ x: 8, knots: 0 },
+		{ x: 9, knots: 0 },
+		{ x: 10, knots: 0 },
+		{ x: 11, knots: 0 },
+		{ x: 12, knots: 0 },
+		{ x: 13, knots: 0 },
+		{ x: 14, knots: 0 },
+		{ x: 15, knots: 0 },
+		{ x: 16, knots: 0 },
+		{ x: 17, knots: 0 },
+		{ x: 18, knots: 0 },
+		{ x: 19, knots: 0 },
+		{ x: 20, knots: 0 },
+	])
 
 	const autoBerthBtn = () => {
 		setAutoStatus(!autoStatus)
 		console.log(autoStatus)
 	}
 
+	const shiftArray = (latestWindSpeed: number) => {
+		const t = windData
+		for (let i = 0; i < 19; i++) {
+			t[i].knots = t[i + 1].knots
+		}
+		t[19].knots = latestWindSpeed
+		setWindData(t)
+	}
+
 	useEffect(() => {
-		// const newData = windData
-		// const lastPoint = windData[19]
-		// lastPoint.y += 1
-		// newData.shift()
-		// newData.push(lastPoint)
 		setTimeout(() => {
-			// setWindData(newData)
-			const t = Math.floor(Math.random() * 9)
+			let t = Math.floor(Math.random() * 9)
 			if (t < 3 && latestWindSpeed + t - 3 > 0) {
-				setLatestWindSpeed(latestWindSpeed + t - 3)
+				t = latestWindSpeed + t - 3
 			} else if (t > 5 && latestWindSpeed + t - 5 < 20) {
-				setLatestWindSpeed(latestWindSpeed + t - 5)
+				t = latestWindSpeed + t - 5
+			} else {
+				t = latestWindSpeed
 			}
-			console.log(latestWindSpeed)
-			setUpdater(!updater)
+			if (t < 9) {
+				setRiskLevel('Low')
+			} else if (t < 13) {
+				setRiskLevel('Moderate')
+			} else if (t < 18) {
+				setRiskLevel('High')
+			} else {
+				setRiskLevel('Very High')
+			}
+			if (updater % 5 == 0) {
+				setUpdateChart(!updateChart)
+			}
+			shiftArray(t)
+			setLatestWindSpeed(t)
+			setUpdater(updater + 1)
 		}, 800)
 	}, [updater])
 
@@ -126,11 +145,11 @@ const Sidebar = () => {
 			<Flex
 				justifyContent="center"
 				borderRadius="4px"
-				bgColor="white"
+				bgColor={riskColor[riskLevel]}
 				padding="10px"
 				display={sidebarOpen ? 'flex' : 'none'}
 			>
-				<Text>{riskLevel}</Text>
+				<Text>{riskLevel} Risk</Text>
 			</Flex>
 			<Flex
 				flexDir="column"
@@ -147,14 +166,29 @@ const Sidebar = () => {
 				<Text>Wind Speed</Text>
 			</Flex>
 			<Flex
+				height="250px"
+				width="250px"
 				flexDir="column"
-				alignItems="center"
-				justifyContent="center"
 				borderRadius="4px"
-				padding="20px"
 				display={sidebarOpen ? 'flex' : 'none'}
 			>
-				{/* <CanvasJSChart options={options} /> */}
+				<ResponsiveContainer width="100%" height="100%">
+					<LineChart
+						data={windData}
+						margin={{ left: -30 }}
+						key={Number(updateChart)}
+					>
+						<YAxis />
+						<XAxis />
+						<Legend />
+						<Line
+							type="monotone"
+							dataKey="knots"
+							stroke="#8884d8"
+							dot={false}
+						/>
+					</LineChart>
+				</ResponsiveContainer>
 			</Flex>
 			<Button
 				bgColor={autoStatus ? '#22CF4D' : '#383838'}
