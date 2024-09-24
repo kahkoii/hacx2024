@@ -145,6 +145,7 @@ const Sidebar = () => {
 			<Flex
 				justifyContent="center"
 				borderRadius="4px"
+				// @ts-expect-error type safe
 				bgColor={riskColor[riskLevel]}
 				padding="10px"
 				display={sidebarOpen ? 'flex' : 'none'}

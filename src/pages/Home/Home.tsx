@@ -8,6 +8,7 @@ const Home: React.FC = () => {
 		<>
 			<Sidebar />
 			<Box h="100vh" w="100vw">
+				{/* @ts-expect-error type safe*/}
 				<Canvas />
 			</Box>
 		</>

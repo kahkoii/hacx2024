@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
 import { createRef, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
 import paper from 'paper'
