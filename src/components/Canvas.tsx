@@ -312,7 +312,7 @@ export const Canvas = ({ props, children }) => {
 			)
 
 			const title = new paper.PointText(new paper.Point(50, 50))
-			title.content = 'SHIPSIGHT'
+			title.content = 'BERTHINGBUDDY'
 			title.fillColor = new paper.Color(0, 0, 0)
 			title.fontFamily = 'JetBrains Mono'
 			title.fontWeight = 'bold'
