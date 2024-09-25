@@ -211,6 +211,13 @@ const generateObstacleGroup = (paper) => {
 		const obstacle = new paper.Path(obstacles[i])
 		obstacle.closed = true
 		obstacle.fillColor = new paper.Color(0, 0, 0, 0.01)
+		obstacle.onMouseClick = () => {
+			if (obstacle.fillColor != 'green') {
+				obstacle.fillColor = 'green';
+			} else {
+				obstacle.fillColor = new paper.Color(0, 0, 0, 0.01);
+			}
+		}
 
 		obstacleGroup.addChild(obstacle)
 	}
